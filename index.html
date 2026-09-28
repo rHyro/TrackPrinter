@@ -41,6 +41,8 @@ button{border:none;border-radius:8px;padding:9px 16px;font-size:.9rem;cursor:poi
 .btn-primary:hover{background:var(--accent-dark);color:#fff;}
 .btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text);}
 .btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger);padding:4px 8px;font-size:.8rem;}
+.method-btn{background:transparent;border:2px solid var(--border);color:var(--text);padding:14px 18px;font-size:1rem;flex:1;min-width:140px;}
+.method-btn.active{border-color:var(--accent);background:var(--accent);color:#04220f;}
 table{width:100%;border-collapse:collapse;margin-top:14px;}
 th{text-align:left;font-size:.75rem;color:var(--muted);padding:4px 6px;font-weight:600;}
 td{padding:4px 6px;}
@@ -54,40 +56,56 @@ input[type="file"]{font-size:.85rem;color:var(--text);}
 input[type="file"]::file-selector-button{border:none;border-radius:8px;padding:8px 14px;font-weight:600;
   background:var(--accent);color:#04220f;margin-right:10px;cursor:pointer;}
 .sub a{color:var(--accent-dark);}
+.method-panel{display:none;margin-top:16px;}
+.method-panel.visible{display:block;}
+input.text{width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);margin-bottom:10px;}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>🎵 Spotify Karten Generator</h1>
-  <p class="sub">Trage einzelne Spotify-<b>Song</b>-Links (keine Playlist-Links) mit Jahr, Interpret und Songname ein und erhalte eine druckfertige PDF im Hitster-Stil: quadratische 65×65&nbsp;mm Karten, Vorderseite mit Jahreszahl/Interpret/Songname, Rückseite mit QR-Code zum Abspielen (mit jeder normalen Handykamera scannbar). Spotify erlaubt keinen automatischen Metadaten-Abruf aus dem Browser, daher bitte Jahr/Interpret/Titel manuell angeben.</p>
+  <h1>🎵 Musik Karten Generator</h1>
+  <p class="sub">Wähle unten eine Methode, um deine Songs einzufügen, und erhalte am Ende eine druckfertige PDF im Hitster-Stil: quadratische 65×65&nbsp;mm Karten, Vorderseite mit Jahreszahl/Interpret/Songname, Rückseite mit QR-Code zum Abspielen.</p>
 
   <div class="card">
-    <h2>CSV-Datei importieren</h2>
-    <p class="sub" style="margin:0 0 10px;">Exportiere deine Playlist z.&nbsp;B. mit <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> (eigener Spotify-Login) und lade die CSV-Datei hier hoch – Jahr, Interpret, Songname und Link werden automatisch ausgelesen.</p>
-    <input type="file" id="csvFile" accept=".csv,text/csv">
-    <div class="status" id="csvStatus"></div>
-  </div>
-
-  <div class="card">
-    <h2>🔗 Playlist direkt importieren (Login)</h2>
-    <p class="sub" style="margin:0 0 10px;">Einmalig eigene kostenlose API-Zugänge einrichten (siehe „Einrichtung"), danach reicht Login + Playlist auswählen.</p>
+    <h2>Woher kommen deine Songs?</h2>
     <div class="row-btns">
-      <button class="btn-primary" id="spotifyLoginBtn">🎵 Mit Spotify anmelden</button>
-      <button class="btn-secondary" id="ytLoginBtn">▶️ Mit YouTube anmelden</button>
+      <button class="method-btn" id="modeBtnSpotify">🎵 Spotify<br><small style="font-weight:400;">CSV-Datei</small></button>
+      <button class="method-btn" id="modeBtnYoutube">▶️ YouTube<br><small style="font-weight:400;">Anmelden</small></button>
+      <button class="method-btn" id="modeBtnManual">✍️ Manuell<br><small style="font-weight:400;">Massenimport</small></button>
     </div>
-    <div class="status" id="importStatus"></div>
 
-    <details style="margin-top:14px;">
-      <summary style="cursor:pointer;font-size:.88rem;color:var(--muted);">⚙️ Einrichtung (einmalig)</summary>
-      <div style="margin-top:10px;font-size:.85rem;">
-        <p class="sub" style="margin:0 0 6px;">Diese Adresse muss bei beiden Diensten als Redirect-/Origin-URL hinterlegt werden:</p>
-        <input id="selfUrl" readonly style="width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:.8rem;margin-bottom:10px;">
-        <p class="sub" style="margin:0 0 4px;"><b>Spotify Client-ID</b> – erstellen auf <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">developer.spotify.com/dashboard</a>, Redirect URI = obige Adresse:</p>
-        <input id="spotifyClientId" placeholder="Spotify Client-ID" style="width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);margin-bottom:10px;">
-        <p class="sub" style="margin:0 0 4px;"><b>YouTube (Google) Client-ID</b> – erstellen auf <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">console.cloud.google.com/apis/credentials</a> (OAuth-Client, Typ „Webanwendung", YouTube Data API v3 aktivieren, Autorisierter JavaScript-Origin = obige Adresse ohne Pfad):</p>
-        <input id="ytClientId" placeholder="Google Client-ID" style="width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);">
+    <div class="method-panel" id="panelSpotify">
+      <p class="sub" style="margin:10px 0 10px;">Exportiere deine Playlist mit <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> (eigener, kostenloser Spotify-Login) und lade die CSV-Datei hier hoch – Jahr, Interpret, Songname und Link werden automatisch ausgelesen. (Ein direkter Spotify-Login hier im Tool ist aktuell durch eine Spotify-Plattformsperre für neue Entwickler-Apps nicht möglich.)</p>
+      <input type="file" id="csvFile" accept=".csv,text/csv">
+      <div class="status" id="csvStatus"></div>
+    </div>
+
+    <div class="method-panel" id="panelYoutube">
+      <p class="sub" style="margin:10px 0 10px;">Einmalig einrichten, dann reicht Login + Playlist auswählen.</p>
+      <div class="row-btns">
+        <button class="btn-primary" id="ytLoginBtn">▶️ Mit YouTube anmelden</button>
       </div>
-    </details>
+      <div class="status" id="importStatus"></div>
+      <details style="margin-top:14px;">
+        <summary style="cursor:pointer;font-size:.88rem;color:var(--muted);">⚙️ Einrichtung (einmalig)</summary>
+        <div style="margin-top:10px;font-size:.85rem;">
+          <p class="sub" style="margin:0 0 6px;">Dieser Origin (<b>ohne Pfad</b>) muss in der Google Cloud Console unter „Autorisierte JavaScript-Origins" exakt so eingetragen werden:</p>
+          <input id="selfUrl" class="text" readonly>
+          <p class="sub" style="margin:0 0 4px;"><b>YouTube (Google) Client-ID</b> – erstellen auf <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">console.cloud.google.com/apis/credentials</a> (OAuth-Client, Typ „Webanwendung", YouTube Data API v3 aktivieren):</p>
+          <input id="ytClientId" class="text" placeholder="Google Client-ID">
+        </div>
+      </details>
+    </div>
+
+    <div class="method-panel" id="panelManual">
+      <p class="sub" style="margin:10px 0 8px;">Ein Song pro Zeile, Format: <code>Jahr;Interpret;Songname;Link</code></p>
+      <textarea id="bulk" placeholder="2011;Adele;Someone Like You;https://open.spotify.com/track/xxxx
+1975;Queen;Bohemian Rhapsody;https://open.spotify.com/track/yyyy"></textarea>
+      <div class="row-btns">
+        <button class="btn-primary" id="parseBtn">Zeilen übernehmen</button>
+        <button class="btn-secondary" id="addRowBtn">+ Leere Zeile</button>
+      </div>
+    </div>
   </div>
 
   <div id="playlistModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);align-items:center;justify-content:center;z-index:100;">
@@ -99,21 +117,10 @@ input[type="file"]::file-selector-button{border:none;border-radius:8px;padding:8
   </div>
 
   <div class="card">
-    <h2>Songs per Massenimport einfügen</h2>
-    <p class="sub" style="margin:0 0 8px;">Ein Song pro Zeile, Format: <code>Jahr;Interpret;Songname;Spotify-Link</code></p>
-    <textarea id="bulk" placeholder="2011;Adele;Someone Like You;https://open.spotify.com/track/xxxx
-1975;Queen;Bohemian Rhapsody;https://open.spotify.com/track/yyyy"></textarea>
-    <div class="row-btns">
-      <button class="btn-primary" id="parseBtn">Zeilen übernehmen</button>
-      <button class="btn-secondary" id="addRowBtn">+ Leere Zeile</button>
-    </div>
-  </div>
-
-  <div class="card">
     <h2>Songliste (<span id="count">0</span>)</h2>
     <div class="overflow">
     <table id="tbl">
-      <thead><tr><th style="width:60px;">Jahr</th><th>Interpret</th><th>Songname</th><th>Spotify-Link</th><th></th></tr></thead>
+      <thead><tr><th style="width:60px;">Jahr</th><th>Interpret</th><th>Songname</th><th>Link</th><th></th></tr></thead>
       <tbody id="tbody"></tbody>
     </table>
     </div>
@@ -160,6 +167,19 @@ function render(){
   });
 }
 
+// --- Methoden-Auswahl ---
+const modeButtons = {spotify:'modeBtnSpotify', youtube:'modeBtnYoutube', manual:'modeBtnManual'};
+const modePanels = {spotify:'panelSpotify', youtube:'panelYoutube', manual:'panelManual'};
+function selectMode(mode){
+  Object.entries(modeButtons).forEach(([k,id])=>document.getElementById(id).classList.toggle('active', k===mode));
+  Object.entries(modePanels).forEach(([k,id])=>document.getElementById(id).classList.toggle('visible', k===mode));
+}
+document.getElementById('modeBtnSpotify').addEventListener('click', ()=>selectMode('spotify'));
+document.getElementById('modeBtnYoutube').addEventListener('click', ()=>selectMode('youtube'));
+document.getElementById('modeBtnManual').addEventListener('click', ()=>selectMode('manual'));
+selectMode('spotify');
+
+// --- Manueller Massenimport ---
 document.getElementById('parseBtn').addEventListener('click', ()=>{
   const lines = document.getElementById('bulk').value.split('\n').map(l=>l.trim()).filter(Boolean);
   lines.forEach(l=>{
@@ -171,7 +191,12 @@ document.getElementById('parseBtn').addEventListener('click', ()=>{
   document.getElementById('bulk').value='';
   render();
 });
+document.getElementById('addRowBtn').addEventListener('click', ()=>{
+  entries.push({year:'',artist:'',title:'',link:''});
+  render();
+});
 
+// --- CSV Import (Spotify via Exportify) ---
 function findCol(fields, candidates){
   const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g,'');
   const normFields = fields.map(norm);
@@ -181,7 +206,6 @@ function findCol(fields, candidates){
   }
   return null;
 }
-
 function linkFromRow(row, uriCol, idCol){
   if(uriCol && row[uriCol]){
     const v = row[uriCol].trim();
@@ -192,7 +216,6 @@ function linkFromRow(row, uriCol, idCol){
   if(idCol && row[idCol]) return 'https://open.spotify.com/track/' + row[idCol].trim();
   return '';
 }
-
 document.getElementById('csvFile').addEventListener('change', (ev)=>{
   const file = ev.target.files[0];
   const csvStatus = document.getElementById('csvStatus');
@@ -209,7 +232,6 @@ document.getElementById('csvFile').addEventListener('change', (ev)=>{
       const nameCol = findCol(fields, ['Track Name','Name','Song','Title']);
       const artistCol = findCol(fields, ['Artist Name(s)','Artist Name','Artist','Artists']);
       const dateCol = findCol(fields, ['Release Date','Album Release Date','Date']);
-
       if(!nameCol || (!uriCol && !idCol)){
         csvStatus.textContent = 'Konnte die Spalten nicht erkennen. Bitte prüfe das CSV-Format (z.B. von exportify.net).';
         return;
@@ -234,86 +256,10 @@ document.getElementById('csvFile').addEventListener('change', (ev)=>{
   });
 });
 
-document.getElementById('selfUrl').value = window.location.origin + window.location.pathname;
-document.getElementById('spotifyClientId').value = localStorage.getItem('sp_client_id_saved') || '';
+// --- YouTube Login-Import ---
+document.getElementById('selfUrl').value = window.location.origin;
 document.getElementById('ytClientId').value = localStorage.getItem('yt_client_id_saved') || '';
-document.getElementById('spotifyClientId').addEventListener('change', e=>localStorage.setItem('sp_client_id_saved', e.target.value.trim()));
 document.getElementById('ytClientId').addEventListener('change', e=>localStorage.setItem('yt_client_id_saved', e.target.value.trim()));
-
-function b64url(buf){
-  return btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-}
-function randStr(len){
-  const arr = new Uint8Array(len); crypto.getRandomValues(arr);
-  return b64url(arr.buffer).slice(0,len);
-}
-async function sha256(str){ return await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)); }
-
-document.getElementById('spotifyLoginBtn').addEventListener('click', async ()=>{
-  const clientId = document.getElementById('spotifyClientId').value.trim();
-  if(!clientId){ alert('Bitte zuerst unter „Einrichtung" die Spotify Client-ID eintragen.'); return; }
-  const verifier = randStr(64);
-  sessionStorage.setItem('sp_verifier', verifier);
-  sessionStorage.setItem('sp_client_id', clientId);
-  const challenge = b64url(await sha256(verifier));
-  const redirectUri = window.location.origin + window.location.pathname;
-  const params = new URLSearchParams({
-    response_type:'code', client_id:clientId, scope:'playlist-read-private playlist-read-collaborative',
-    redirect_uri: redirectUri, code_challenge_method:'S256', code_challenge: challenge, state:'spotify'
-  });
-  window.location.href = 'https://accounts.spotify.com/authorize?' + params.toString();
-});
-
-async function handleSpotifyCallback(code){
-  const importStatus = document.getElementById('importStatus');
-  importStatus.textContent = 'Melde bei Spotify an …';
-  const verifier = sessionStorage.getItem('sp_verifier');
-  const clientId = sessionStorage.getItem('sp_client_id');
-  const redirectUri = window.location.origin + window.location.pathname;
-  const body = new URLSearchParams({grant_type:'authorization_code', code, redirect_uri:redirectUri, client_id:clientId, code_verifier:verifier});
-  try{
-    const res = await fetch('https://accounts.spotify.com/api/token', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body});
-    const data = await res.json();
-    if(!data.access_token) throw new Error(data.error_description || 'Kein Token erhalten');
-    sessionStorage.setItem('sp_token', data.access_token);
-    await loadSpotifyPlaylists();
-  }catch(err){ importStatus.textContent = 'Spotify-Login fehlgeschlagen: '+err.message; }
-}
-
-async function loadSpotifyPlaylists(){
-  const importStatus = document.getElementById('importStatus');
-  importStatus.textContent = 'Lade Spotify-Playlists …';
-  const token = sessionStorage.getItem('sp_token');
-  let items = [], url = 'https://api.spotify.com/v1/me/playlists?limit=50';
-  while(url){
-    const res = await fetch(url, {headers:{Authorization:'Bearer '+token}});
-    const data = await res.json();
-    items = items.concat(data.items||[]);
-    url = data.next;
-  }
-  importStatus.textContent = '';
-  showPlaylistPicker(items.filter(Boolean).map(p=>({id:p.id, name:p.name||'(ohne Namen)', count:(p.tracks&&p.tracks.total)||0, provider:'spotify'})));
-}
-
-async function loadSpotifyTracks(playlistId){
-  const token = sessionStorage.getItem('sp_token');
-  let tracks = [], url = `https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=100&fields=items(track(name,artists(name),album(release_date),external_urls)),next`;
-  while(url){
-    const res = await fetch(url, {headers:{Authorization:'Bearer '+token}});
-    const data = await res.json();
-    tracks = tracks.concat(data.items||[]);
-    url = data.next;
-  }
-  tracks.forEach(item=>{
-    const t = item.track; if(!t) return;
-    entries.push({
-      year: (t.album && t.album.release_date) ? t.album.release_date.slice(0,4) : '',
-      artist: (t.artists||[]).map(a=>a.name).join(' & '),
-      title: t.name,
-      link: t.external_urls ? t.external_urls.spotify : ''
-    });
-  });
-}
 
 let ytTokenClient;
 document.getElementById('ytLoginBtn').addEventListener('click', ()=>{
@@ -335,12 +281,15 @@ async function loadYoutubePlaylists(){
   importStatus.textContent = 'Lade YouTube-Playlists …';
   const token = sessionStorage.getItem('yt_token');
   let items=[], pageToken='';
-  do{
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&mine=true&maxResults=50&pageToken=${pageToken}`, {headers:{Authorization:'Bearer '+token}});
-    const data = await res.json();
-    items = items.concat(data.items||[]);
-    pageToken = data.nextPageToken || '';
-  } while(pageToken);
+  try{
+    do{
+      const res = await fetch(`https://www.googleapis.com/youtube/v3/playlists?part=snippet,contentDetails&mine=true&maxResults=50&pageToken=${pageToken}`, {headers:{Authorization:'Bearer '+token}});
+      const data = await res.json();
+      if(!res.ok) throw new Error((data.error && data.error.message) || ('HTTP '+res.status));
+      items = items.concat(data.items||[]);
+      pageToken = data.nextPageToken || '';
+    } while(pageToken);
+  }catch(err){ importStatus.textContent = 'Fehler beim Laden der Playlists: '+err.message; return; }
   importStatus.textContent = '';
   showPlaylistPicker(items.filter(Boolean).map(p=>({id:p.id, name:(p.snippet&&p.snippet.title)||'(ohne Namen)', count:(p.contentDetails&&p.contentDetails.itemCount)||0, provider:'youtube'})));
 }
@@ -351,6 +300,7 @@ async function loadYoutubeTracks(playlistId){
   do{
     const res = await fetch(`https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&pageToken=${pageToken}`, {headers:{Authorization:'Bearer '+token}});
     const data = await res.json();
+    if(!res.ok) throw new Error((data.error && data.error.message) || ('HTTP '+res.status));
     items = items.concat(data.items||[]);
     pageToken = data.nextPageToken || '';
   } while(pageToken);
@@ -381,10 +331,18 @@ function showPlaylistPicker(list){
       modal.style.display = 'none';
       const importStatus = document.getElementById('importStatus');
       importStatus.textContent = 'Importiere Songs …';
-      if(p.provider==='spotify') await loadSpotifyTracks(p.id);
-      else if(p.provider==='youtube') await loadYoutubeTracks(p.id);
+      const before = entries.length;
+      try{
+        await loadYoutubeTracks(p.id);
+      }catch(err){
+        importStatus.textContent = 'Fehler beim Laden der Songs: ' + err.message;
+        return;
+      }
       render();
-      importStatus.textContent = `${entries.length} Song(s) insgesamt in der Liste.`;
+      const added = entries.length - before;
+      importStatus.textContent = added > 0
+        ? `${added} Song(s) importiert (insgesamt ${entries.length}).`
+        : 'Es wurden 0 Songs importiert.';
     });
     li.appendChild(btn);
     ul.appendChild(li);
@@ -395,20 +353,7 @@ document.getElementById('closeModalBtn').addEventListener('click', ()=>{
   document.getElementById('playlistModal').style.display = 'none';
 });
 
-window.addEventListener('load', ()=>{
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get('code'), state = params.get('state');
-  if(code && state==='spotify'){
-    window.history.replaceState({}, document.title, window.location.pathname);
-    handleSpotifyCallback(code);
-  }
-});
-
-document.getElementById('addRowBtn').addEventListener('click', ()=>{
-  entries.push({year:'',artist:'',title:'',link:''});
-  render();
-});
-
+// --- QR & PDF ---
 function makeQRDataURL(text){
   const host = document.getElementById('qrHost');
   host.innerHTML = '';
@@ -481,7 +426,7 @@ async function buildPdf(){
   }
 
   const blob = doc.output('blob');
-  const filename = 'spotify-karten.pdf';
+  const filename = 'musik-karten.pdf';
 
   let downloads = null;
   try{ downloads = window.claude ? await window.claude.use('downloads') : null; }catch(e){ downloads = null; }
