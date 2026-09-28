@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Musik Karten Generator</title>
+<title>TrackPrinter</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -58,15 +58,15 @@ textarea.text{min-height:70px;font-family:monospace;font-size:.78rem;}
 </head>
 <body>
 <div class="wrap">
-  <h1>🎵 Musik Karten Generator</h1>
+  <h1>🎵 TrackPrinter</h1>
   <p class="sub">Wähle unten eine Methode, um deine Songs einzufügen, und erhalte am Ende eine druckfertige PDF im Hitster-Stil: quadratische 65×65&nbsp;mm Karten, Vorderseite mit Jahreszahl/Interpret/Songname, Rückseite mit QR-Code zum Abspielen.</p>
 
   <div class="card">
-    <h2>Woher kommen deine Songs?</h2>
+    <h2> </h2>
     <div class="row-btns">
       <button class="method-btn" id="modeBtnSpotify">🎵 Spotify<br><small style="font-weight:400;">CSV-Datei</small></button>
-      <button class="method-btn" id="modeBtnAmazon">🎧 Amazon Music<br><small style="font-weight:400;">Über Umweg</small></button>
-      <button class="method-btn" id="modeBtnApple">🍎 Apple Music<br><small style="font-weight:400;">Über Umweg</small></button>
+      <button class="method-btn" id="modeBtnAmazon">🎧 Amazon Music<br><small style="font-weight:400;">Umweg</small></button>
+      <button class="method-btn" id="modeBtnApple">🍎 Apple Music<br><small style="font-weight:400;">Umweg</small></button>
       <button class="method-btn" id="modeBtnManual">✍️ Manuell<br><small style="font-weight:400;">Massenimport</small></button>
     </div>
 
