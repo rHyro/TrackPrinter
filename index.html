@@ -292,7 +292,7 @@ async function loadSpotifyPlaylists(){
     url = data.next;
   }
   importStatus.textContent = '';
-  showPlaylistPicker(items.map(p=>({id:p.id, name:p.name, count:p.tracks.total, provider:'spotify'})));
+  showPlaylistPicker(items.filter(Boolean).map(p=>({id:p.id, name:p.name||'(ohne Namen)', count:(p.tracks&&p.tracks.total)||0, provider:'spotify'})));
 }
 
 async function loadSpotifyTracks(playlistId){
@@ -342,7 +342,7 @@ async function loadYoutubePlaylists(){
     pageToken = data.nextPageToken || '';
   } while(pageToken);
   importStatus.textContent = '';
-  showPlaylistPicker(items.map(p=>({id:p.id, name:p.snippet.title, count:p.contentDetails.itemCount, provider:'youtube'})));
+  showPlaylistPicker(items.filter(Boolean).map(p=>({id:p.id, name:(p.snippet&&p.snippet.title)||'(ohne Namen)', count:(p.contentDetails&&p.contentDetails.itemCount)||0, provider:'youtube'})));
 }
 
 async function loadYoutubeTracks(playlistId){
@@ -354,13 +354,15 @@ async function loadYoutubeTracks(playlistId){
     items = items.concat(data.items||[]);
     pageToken = data.nextPageToken || '';
   } while(pageToken);
-  items.forEach(it=>{
-    const title = it.snippet.title;
+  items.filter(Boolean).forEach(it=>{
+    if(!it.snippet || !it.snippet.resourceId || !it.snippet.resourceId.videoId) return;
+    const title = it.snippet.title || '';
+    if(title === 'Deleted video' || title === 'Private video') return;
     let artist='', song=title;
     const m = title.match(/^(.*?)\s[-–—]\s(.*)$/);
     if(m){ artist=m[1].trim(); song=m[2].trim(); }
-    const videoId = it.snippet.resourceId ? it.snippet.resourceId.videoId : '';
-    entries.push({year:'', artist, title:song, link: videoId ? ('https://www.youtube.com/watch?v='+videoId) : ''});
+    const videoId = it.snippet.resourceId.videoId;
+    entries.push({year:'', artist, title:song, link: 'https://www.youtube.com/watch?v='+videoId});
   });
 }
 
