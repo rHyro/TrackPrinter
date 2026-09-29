@@ -54,29 +54,55 @@ input[type="file"]::file-selector-button{border:none;border-radius:8px;padding:8
 input.text, textarea.text{width:100%;padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text);margin-bottom:10px;font-family:inherit;}
 textarea.text{min-height:70px;font-family:monospace;font-size:.78rem;}
 .warn{background:rgba(230,60,90,.08);border:1px solid var(--danger);border-radius:8px;padding:10px 12px;font-size:.82rem;margin-bottom:10px;}
+.topbar{display:flex;justify-content:flex-end;margin-bottom:6px;}
+.dropdown{position:relative;}
+.dropdown-btn{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);
+  color:var(--text);padding:10px 16px;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;}
+.dropdown-btn:hover{border-color:var(--accent);}
+.dropdown-btn svg{width:14px;height:14px;transition:transform .15s ease;}
+.dropdown-btn.open svg{transform:rotate(180deg);}
+.dropdown-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--panel);border:1px solid var(--border);
+  border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.18);padding:6px;min-width:150px;z-index:50;
+  display:none;}
+.dropdown-menu.open{display:block;}
+.dropdown-item{padding:9px 14px;border-radius:9px;cursor:pointer;font-size:.92rem;transition:background .1s ease;}
+.dropdown-item:hover{background:var(--bg);}
+.dropdown-item.active{background:var(--accent);color:#04220f;font-weight:600;}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>🎵 TrackPrinter</h1>
-  <p class="sub">Wähle unten eine Methode, um deine Songs einzufügen, und erhalte am Ende eine druckfertige PDF im Hitster-Stil: quadratische 65×65&nbsp;mm Karten, Vorderseite mit Jahreszahl/Interpret/Songname, Rückseite mit QR-Code zum Abspielen.</p>
+  <div class="topbar">
+    <div class="dropdown" id="langDropdown">
+      <button class="dropdown-btn" id="langDropdownBtn" type="button">
+        <span id="langDropdownLabel">Deutsch</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-menu" id="langDropdownMenu">
+        <div class="dropdown-item" data-lang="de">Deutsch</div>
+        <div class="dropdown-item" data-lang="en">English</div>
+      </div>
+    </div>
+  </div>
+  <h1 data-i18n="title">Musik Karten Generator</h1>
+  <p class="sub" data-i18n="intro">Wähle unten eine Methode, um deine Songs einzufügen, und erhalte am Ende eine druckfertige PDF im Hitster-Stil: quadratische 65×65&nbsp;mm Karten, Vorderseite mit Jahreszahl/Interpret/Songname, Rückseite mit QR-Code zum Abspielen.</p>
 
   <div class="card">
-    <h2> </h2>
+    <h2 data-i18n="sourceHeading">Woher kommen deine Songs?</h2>
     <div class="row-btns">
-      <button class="method-btn" id="modeBtnSpotify">🎵 Spotify<br><small style="font-weight:400;">CSV-Datei</small></button>
-      <button class="method-btn" id="modeBtnAmazon">🎧 Amazon Music<br><small style="font-weight:400;">Umweg</small></button>
-      <button class="method-btn" id="modeBtnApple">🍎 Apple Music<br><small style="font-weight:400;">Umweg</small></button>
-      <button class="method-btn" id="modeBtnManual">✍️ Manuell<br><small style="font-weight:400;">Massenimport</small></button>
+      <button class="method-btn" id="modeBtnSpotify" data-i18n="modeSpotify">Spotify<br><small style="font-weight:400;">CSV-Datei</small></button>
+      <button class="method-btn" id="modeBtnAmazon" data-i18n="modeAmazon">Amazon Music<br><small style="font-weight:400;">Umweg</small></button>
+      <button class="method-btn" id="modeBtnApple" data-i18n="modeApple">Apple Music<br><small style="font-weight:400;">Umweg</small></button>
+      <button class="method-btn" id="modeBtnManual" data-i18n="modeManual">Manuell<br><small style="font-weight:400;">Massenimport</small></button>
     </div>
 
-    <div class="method-panel" id="panelSpotify">
+    <div class="method-panel" id="panelSpotify" data-i18n="panelSpotify">
       <p class="sub" style="margin:10px 0 10px;">Exportiere deine Playlist mit <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> (eigener, kostenloser Spotify-Login) und lade die CSV-Datei hier hoch – Jahr, Interpret, Songname und Link werden automatisch ausgelesen. (Ein direkter Spotify-Login hier im Tool ist aktuell durch eine Spotify-Plattformsperre für neue Entwickler-Apps nicht möglich.)</p>
       <input type="file" id="csvFile" accept=".csv,text/csv">
       <div class="status" id="csvStatus"></div>
     </div>
 
-    <div class="method-panel" id="panelAmazon">
+    <div class="method-panel" id="panelAmazon" data-i18n="panelAmazon">
       <p class="sub" style="margin:0 0 10px;">Amazon Music selbst lässt sich hier nicht direkt anmelden (kein Zugang für Privatpersonen). Aber mit einem kostenlosen Umweg über <b>TuneMyMusic</b> klappt es trotzdem in wenigen Minuten:</p>
       <ol style="margin:0 0 12px;padding-left:20px;font-size:.9rem;line-height:1.7;">
         <li>Gehe auf <a href="https://www.tunemymusic.com" target="_blank" rel="noopener">tunemymusic.com</a></li>
@@ -84,55 +110,210 @@ textarea.text{min-height:70px;font-family:monospace;font-size:.78rem;}
         <li>Deine Playlist auswählen, die du übertragen willst</li>
         <li>Als <b>Ziel</b> "Spotify" auswählen und mit einem (kostenlosen) Spotify-Konto anmelden</li>
         <li>Übertragung starten – TuneMyMusic erstellt automatisch eine neue Spotify-Playlist mit denselben Songs</li>
-        <li>Diese neue Spotify-Playlist ganz normal oben bei <b>"🎵 Spotify"</b> über <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> als CSV exportieren und hier hochladen</li>
+        <li>Diese neue Spotify-Playlist ganz normal oben bei <b>"Spotify"</b> über <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> als CSV exportieren und hier hochladen</li>
       </ol>
       <p class="sub" style="margin:0;">Kostenlos reicht meist aus (Limit ca. 200 Songs pro Playlist in der Gratis-Version; bei größeren Playlists ggf. kostenpflichtiger Tarif oder mehrfach in Teilen übertragen).</p>
     </div>
 
-    <div class="method-panel" id="panelApple">
-      <p class="sub" style="margin:0 0 10px;">Auch für Apple Music gibt es den kostenlosen Umweg über <b>TuneMyMusic</b> – spart dir die kostenpflichtige Apple-Developer-Mitgliedschaft komplett:</p>
+    <div class="method-panel" id="panelApple" data-i18n="panelApple">
+      <p class="sub" style="margin:0 0 10px;"><b>Einfachste Option (komplett kostenlos, kein Limit):</b> <a href="https://playlistor.io" target="_blank" rel="noopener">playlistor.io</a> – speziell für Apple Music ↔ Spotify gemacht.</p>
+      <ol style="margin:0 0 14px;padding-left:20px;font-size:.9rem;line-height:1.7;">
+        <li>Playlist in der Apple-Music-App öffnen → Teilen → Link kopieren (muss eine öffentliche/geteilte Playlist sein)</li>
+        <li>Auf <a href="https://playlistor.io" target="_blank" rel="noopener">playlistor.io</a> den Apple-Music-Link einfügen</li>
+        <li>Mit Spotify anmelden – Playlistor legt automatisch eine passende Spotify-Playlist an</li>
+        <li>Diese neue Spotify-Playlist wie gewohnt oben bei <b>"Spotify"</b> über <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> als CSV exportieren und hier hochladen</li>
+      </ol>
+      <p class="sub" style="margin:0 0 6px;"><b>Falls das nicht klappt (z.B. Playlist nicht öffentlich teilbar):</b> Alternative über TuneMyMusic:</p>
       <ol style="margin:0 0 12px;padding-left:20px;font-size:.9rem;line-height:1.7;">
         <li>Gehe auf <a href="https://www.tunemymusic.com" target="_blank" rel="noopener">tunemymusic.com</a></li>
         <li>Als <b>Quelle</b> "Apple Music" auswählen und mit deiner Apple-ID anmelden</li>
-        <li>Deine Playlist auswählen, die du übertragen willst</li>
-        <li>Als <b>Ziel</b> "Spotify" auswählen und mit einem (kostenlosen) Spotify-Konto anmelden</li>
-        <li>Übertragung starten – TuneMyMusic erstellt automatisch eine neue Spotify-Playlist mit denselben Songs</li>
-        <li>Diese neue Spotify-Playlist ganz normal oben bei <b>"🎵 Spotify"</b> über <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> als CSV exportieren und hier hochladen</li>
+        <li>Playlist auswählen, als <b>Ziel</b> "Spotify" wählen und übertragen</li>
+        <li>Danach wie oben mit Exportify als CSV exportieren</li>
       </ol>
-      <p class="sub" style="margin:0;">Kostenlos reicht meist aus (Limit ca. 200 Songs pro Playlist in der Gratis-Version; bei größeren Playlists ggf. kostenpflichtiger Tarif oder mehrfach in Teilen übertragen).</p>
     </div>
 
     <div class="method-panel" id="panelManual">
-      <p class="sub" style="margin:10px 0 8px;">Ein Song pro Zeile, Format: <code>Jahr;Interpret;Songname;Link</code></p>
-      <textarea id="bulk" placeholder="2011;Adele;Someone Like You;https://open.spotify.com/track/xxxx
+      <p class="sub" style="margin:10px 0 8px;" data-i18n="manualIntro">Ein Song pro Zeile, Format: <code>Jahr;Interpret;Songname;Link</code></p>
+      <textarea id="bulk" data-i18n-placeholder="bulkPlaceholder" placeholder="2011;Adele;Someone Like You;https://open.spotify.com/track/xxxx
 1975;Queen;Bohemian Rhapsody;https://open.spotify.com/track/yyyy"></textarea>
       <div class="row-btns">
-        <button class="btn-primary" id="parseBtn">Zeilen übernehmen</button>
-        <button class="btn-secondary" id="addRowBtn">+ Leere Zeile</button>
+        <button class="btn-primary" id="parseBtn" data-i18n="parseBtn">Zeilen übernehmen</button>
+        <button class="btn-secondary" id="addRowBtn" data-i18n="addRowBtn">+ Leere Zeile</button>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <h2>Songliste (<span id="count">0</span>)</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+      <h2 style="margin:0;"><span data-i18n="songListLabel">Songliste</span> (<span id="count">0</span>)</h2>
+      <button class="btn-danger" id="clearAllBtn" style="padding:6px 12px;" data-i18n="clearAllBtn">Alle entfernen</button>
+    </div>
     <div class="overflow">
     <table id="tbl">
-      <thead><tr><th style="width:60px;">Jahr</th><th>Interpret</th><th>Songname</th><th>Link</th><th></th></tr></thead>
+      <thead><tr>
+        <th style="width:60px;" data-i18n="thYear">Jahr</th>
+        <th data-i18n="thArtist">Interpret</th>
+        <th data-i18n="thTitle">Songname</th>
+        <th data-i18n="thLink">Link</th>
+        <th></th>
+      </tr></thead>
       <tbody id="tbody"></tbody>
     </table>
     </div>
   </div>
 
   <div class="card">
-    <h2>PDF erstellen</h2>
-    <label class="opt"><input type="checkbox" id="mirrorBack" checked> Rückseiten spiegeln (für beidseitigen Druck an der langen Kante)</label>
-    <div class="row-btns"><button class="btn-primary" id="pdfBtn">📄 Karten-PDF erstellen</button></div>
+    <h2 data-i18n="pdfHeading">PDF erstellen</h2>
+    <label class="opt"><input type="checkbox" id="mirrorBack" checked> <span data-i18n="mirrorLabel">Rückseiten spiegeln (für beidseitigen Druck an der langen Kante)</span></label>
+    <div class="row-btns"><button class="btn-primary" id="pdfBtn" data-i18n="pdfBtn">Karten-PDF erstellen</button></div>
     <div class="status" id="status"></div>
   </div>
 </div>
 <div id="qrHost" class="hidden-qr"></div>
 
 <script>
+// --- i18n ---
+const I18N = {
+  title: {de:'TrackPrinter', en:'TrackPrinter'},
+  intro: {de:'Wähle unten eine Methode, um deine Songs einzufügen, und erhalte am Ende eine druckfertige PDF im Hitster-Stil: quadratische 65×65&nbsp;mm Karten, Vorderseite mit Jahreszahl/Interpret/Songname, Rückseite mit QR-Code zum Abspielen.',
+       en:'Pick a method below to add your songs, then get a print-ready PDF in Hitster style: square 65×65&nbsp;mm cards, front side with year/artist/song name, back side with a QR code to play the song.'},
+  sourceHeading: {de:'Woher kommen deine Songs?', en:'Where are your songs coming from?'},
+  modeSpotify: {de:'Spotify<br><small style="font-weight:400;">CSV-Datei</small>', en:'Spotify<br><small style="font-weight:400;">CSV file</small>'},
+  modeAmazon: {de:'Amazon Music<br><small style="font-weight:400;">Umweg</small>', en:'Amazon Music<br><small style="font-weight:400;">Workaround</small>'},
+  modeApple: {de:'Apple Music<br><small style="font-weight:400;">Umweg</small>', en:'Apple Music<br><small style="font-weight:400;">Workaround</small>'},
+  modeManual: {de:'Manuell<br><small style="font-weight:400;">Massenimport</small>', en:'Manual<br><small style="font-weight:400;">Bulk import</small>'},
+  panelSpotify: {
+    de:`<p class="sub" style="margin:10px 0 10px;">Exportiere deine Playlist mit <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> (eigener, kostenloser Spotify-Login) und lade die CSV-Datei hier hoch – Jahr, Interpret, Songname und Link werden automatisch ausgelesen. (Ein direkter Spotify-Login hier im Tool ist aktuell durch eine Spotify-Plattformsperre für neue Entwickler-Apps nicht möglich.)</p>
+      <div class="row-btns"><button class="btn-primary" id="csvChooseBtn" type="button">Datei auswählen</button><span class="status" id="csvFileName" style="margin:0;"></span></div>
+      <input type="file" id="csvFile" accept=".csv,text/csv" style="display:none;">
+      <div class="status" id="csvStatus"></div>`,
+    en:`<p class="sub" style="margin:10px 0 10px;">Export your playlist with <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> (your own, free Spotify login) and upload the CSV file here – year, artist, song name and link are read automatically. (A direct Spotify login inside this tool currently isn't possible due to a Spotify platform restriction for new developer apps.)</p>
+      <div class="row-btns"><button class="btn-primary" id="csvChooseBtn" type="button">Choose file</button><span class="status" id="csvFileName" style="margin:0;"></span></div>
+      <input type="file" id="csvFile" accept=".csv,text/csv" style="display:none;">
+      <div class="status" id="csvStatus"></div>`
+  },
+  panelAmazon: {
+    de:`<p class="sub" style="margin:0 0 10px;">Amazon Music selbst lässt sich hier nicht direkt anmelden (kein Zugang für Privatpersonen). Aber mit einem kostenlosen Umweg über <b>TuneMyMusic</b> klappt es trotzdem in wenigen Minuten:</p>
+      <ol style="margin:0 0 12px;padding-left:20px;font-size:.9rem;line-height:1.7;">
+        <li>Gehe auf <a href="https://www.tunemymusic.com" target="_blank" rel="noopener">tunemymusic.com</a></li>
+        <li>Als <b>Quelle</b> "Amazon Music" auswählen und mit deinem Amazon-Konto anmelden</li>
+        <li>Deine Playlist auswählen, die du übertragen willst</li>
+        <li>Als <b>Ziel</b> "Spotify" auswählen und mit einem (kostenlosen) Spotify-Konto anmelden</li>
+        <li>Übertragung starten – TuneMyMusic erstellt automatisch eine neue Spotify-Playlist mit denselben Songs</li>
+        <li>Diese neue Spotify-Playlist ganz normal oben bei <b>"Spotify"</b> über <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> als CSV exportieren und hier hochladen</li>
+      </ol>
+      <p class="sub" style="margin:0;">Kostenlos reicht meist aus (Limit ca. 200 Songs pro Playlist in der Gratis-Version; bei größeren Playlists ggf. kostenpflichtiger Tarif oder mehrfach in Teilen übertragen).</p>`,
+    en:`<p class="sub" style="margin:0 0 10px;">You can't log in with Amazon Music directly here (no access for individuals). But a free workaround via <b>TuneMyMusic</b> gets you there in a few minutes:</p>
+      <ol style="margin:0 0 12px;padding-left:20px;font-size:.9rem;line-height:1.7;">
+        <li>Go to <a href="https://www.tunemymusic.com" target="_blank" rel="noopener">tunemymusic.com</a></li>
+        <li>Choose "Amazon Music" as the <b>source</b> and sign in with your Amazon account</li>
+        <li>Select the playlist you want to transfer</li>
+        <li>Choose "Spotify" as the <b>destination</b> and sign in with a (free) Spotify account</li>
+        <li>Start the transfer – TuneMyMusic automatically creates a new Spotify playlist with the same songs</li>
+        <li>Export that new Spotify playlist as usual up top under <b>"Spotify"</b> via <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> as CSV and upload it here</li>
+      </ol>
+      <p class="sub" style="margin:0;">The free tier is usually enough (limit of about 200 songs per playlist; for bigger playlists you may need the paid plan or transfer in batches).</p>`
+  },
+  panelApple: {
+    de:`<p class="sub" style="margin:0 0 10px;"><b>Einfachste Option (komplett kostenlos, kein Limit):</b> <a href="https://playlistor.io" target="_blank" rel="noopener">playlistor.io</a> – speziell für Apple Music ↔ Spotify gemacht.</p>
+      <ol style="margin:0 0 14px;padding-left:20px;font-size:.9rem;line-height:1.7;">
+        <li>Playlist in der Apple-Music-App öffnen → Teilen → Link kopieren (muss eine öffentliche/geteilte Playlist sein)</li>
+        <li>Auf <a href="https://playlistor.io" target="_blank" rel="noopener">playlistor.io</a> den Apple-Music-Link einfügen</li>
+        <li>Mit Spotify anmelden – Playlistor legt automatisch eine passende Spotify-Playlist an</li>
+        <li>Diese neue Spotify-Playlist wie gewohnt oben bei <b>"Spotify"</b> über <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> als CSV exportieren und hier hochladen</li>
+      </ol>
+      <p class="sub" style="margin:0 0 6px;"><b>Falls das nicht klappt (z.B. Playlist nicht öffentlich teilbar):</b> Alternative über TuneMyMusic:</p>
+      <ol style="margin:0 0 12px;padding-left:20px;font-size:.9rem;line-height:1.7;">
+        <li>Gehe auf <a href="https://www.tunemymusic.com" target="_blank" rel="noopener">tunemymusic.com</a></li>
+        <li>Als <b>Quelle</b> "Apple Music" auswählen und mit deiner Apple-ID anmelden</li>
+        <li>Playlist auswählen, als <b>Ziel</b> "Spotify" wählen und übertragen</li>
+        <li>Danach wie oben mit Exportify als CSV exportieren</li>
+      </ol>`,
+    en:`<p class="sub" style="margin:0 0 10px;"><b>Easiest option (completely free, no limit):</b> <a href="https://playlistor.io" target="_blank" rel="noopener">playlistor.io</a> – made specifically for Apple Music ↔ Spotify.</p>
+      <ol style="margin:0 0 14px;padding-left:20px;font-size:.9rem;line-height:1.7;">
+        <li>Open the playlist in the Apple Music app → Share → Copy Link (must be a public/shareable playlist)</li>
+        <li>Paste the Apple Music link on <a href="https://playlistor.io" target="_blank" rel="noopener">playlistor.io</a></li>
+        <li>Sign in with Spotify – Playlistor automatically creates a matching Spotify playlist</li>
+        <li>Export that new Spotify playlist as usual up top under <b>"Spotify"</b> via <a href="https://exportify.net" target="_blank" rel="noopener">exportify.net</a> as CSV and upload it here</li>
+      </ol>
+      <p class="sub" style="margin:0 0 6px;"><b>If that doesn't work (e.g. playlist not shareable):</b> Alternative via TuneMyMusic:</p>
+      <ol style="margin:0 0 12px;padding-left:20px;font-size:.9rem;line-height:1.7;">
+        <li>Go to <a href="https://www.tunemymusic.com" target="_blank" rel="noopener">tunemymusic.com</a></li>
+        <li>Choose "Apple Music" as the <b>source</b> and sign in with your Apple ID</li>
+        <li>Select the playlist, choose "Spotify" as the <b>destination</b> and transfer</li>
+        <li>Then export via Exportify as CSV like above</li>
+      </ol>`
+  },
+  manualIntro: {de:'Ein Song pro Zeile, Format: <code>Jahr;Interpret;Songname;Link</code>', en:'One song per line, format: <code>Year;Artist;Song name;Link</code>'},
+  bulkPlaceholder: {de:'2011;Adele;Someone Like You;https://open.spotify.com/track/xxxx\n1975;Queen;Bohemian Rhapsody;https://open.spotify.com/track/yyyy',
+                     en:'2011;Adele;Someone Like You;https://open.spotify.com/track/xxxx\n1975;Queen;Bohemian Rhapsody;https://open.spotify.com/track/yyyy'},
+  parseBtn: {de:'Zeilen übernehmen', en:'Import lines'},
+  addRowBtn: {de:'+ Leere Zeile', en:'+ Empty row'},
+  songListLabel: {de:'Songliste', en:'Song list'},
+  clearAllBtn: {de:'Alle entfernen', en:'Remove all'},
+  thYear: {de:'Jahr', en:'Year'},
+  thArtist: {de:'Interpret', en:'Artist'},
+  thTitle: {de:'Songname', en:'Song name'},
+  thLink: {de:'Link', en:'Link'},
+  pdfHeading: {de:'PDF erstellen', en:'Create PDF'},
+  mirrorLabel: {de:'Rückseiten spiegeln (für beidseitigen Druck an der langen Kante)', en:'Mirror backs (for double-sided printing, flip on long edge)'},
+  pdfBtn: {de:'Karten-PDF erstellen', en:'Create card PDF'}
+};
+const T = {
+  readingCsv: {de:'Lese CSV …', en:'Reading CSV …'},
+  csvColsUnclear: {de:'Konnte die Spalten nicht erkennen.', en:'Could not detect the columns.'},
+  csvImported: {de:n=>`${n} Song(s) aus der CSV übernommen.`, en:n=>`${n} song(s) imported from CSV.`},
+  csvNoneFound: {de:'Keine gültigen Zeilen gefunden.', en:'No valid rows found.'},
+  csvReadError: {de:m=>`Fehler beim Lesen der CSV: ${m}`, en:m=>`Error reading CSV: ${m}`},
+  clearConfirm: {de:n=>`Wirklich alle ${n} Songs aus der Liste entfernen?`, en:n=>`Really remove all ${n} songs from the list?`},
+  needOneSong: {de:'Bitte mindestens einen Song mit Titel und Link eintragen.', en:'Please add at least one song with a title and link.'},
+  buildingPdf: {de:'Erzeuge QR-Codes und PDF …', en:'Generating QR codes and PDF …'},
+  pdfOfferedSave: {de:'PDF wurde zum Speichern angeboten.', en:'PDF was offered for saving.'},
+  pdfSaveFailed: {de:'Speichern abgebrochen oder fehlgeschlagen.', en:'Saving was cancelled or failed.'},
+  pdfDownloadStarted: {de:'PDF-Download gestartet.', en:'PDF download started.'}
+};
+let currentLang = localStorage.getItem('lang') || 'de';
+function t(key, ...args){
+  const entry = T[key][currentLang];
+  return typeof entry === 'function' ? entry(...args) : entry;
+}
+function applyLang(){
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    if(I18N[key]) el.innerHTML = I18N[key][currentLang];
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    const key = el.getAttribute('data-i18n-placeholder');
+    if(I18N[key]) el.placeholder = I18N[key][currentLang];
+  });
+  const activeItem = document.querySelector(`.dropdown-item[data-lang="${currentLang}"]`);
+  document.getElementById('langDropdownLabel').textContent = activeItem ? activeItem.textContent : currentLang;
+  document.querySelectorAll('.dropdown-item').forEach(it=>it.classList.toggle('active', it.dataset.lang===currentLang));
+  wireCsvInput();
+}
+const langDropdownBtn = document.getElementById('langDropdownBtn');
+const langDropdownMenu = document.getElementById('langDropdownMenu');
+langDropdownBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  langDropdownMenu.classList.toggle('open');
+  langDropdownBtn.classList.toggle('open');
+});
+document.querySelectorAll('.dropdown-item').forEach(item=>{
+  item.addEventListener('click', ()=>{
+    currentLang = item.dataset.lang;
+    localStorage.setItem('lang', currentLang);
+    langDropdownMenu.classList.remove('open');
+    langDropdownBtn.classList.remove('open');
+    applyLang();
+  });
+});
+document.addEventListener('click', ()=>{
+  langDropdownMenu.classList.remove('open');
+  langDropdownBtn.classList.remove('open');
+});
+applyLang();
+
 let entries = [];
 
 function render(){
@@ -156,6 +337,14 @@ function render(){
     btn.addEventListener('click', ()=>{ entries.splice(+btn.dataset.del,1); render(); });
   });
 }
+
+document.getElementById('clearAllBtn').addEventListener('click', ()=>{
+  if(entries.length===0) return;
+  if(confirm(t('clearConfirm', entries.length))){
+    entries = [];
+    render();
+  }
+});
 
 // --- Methoden-Auswahl ---
 const modeButtons = {spotify:'modeBtnSpotify', apple:'modeBtnApple', amazon:'modeBtnAmazon', manual:'modeBtnManual'};
@@ -200,40 +389,45 @@ function linkFromRow(row, uriCol, idCol){
   if(idCol && row[idCol]) return 'https://open.spotify.com/track/' + row[idCol].trim();
   return '';
 }
-document.getElementById('csvFile').addEventListener('change', (ev)=>{
-  const file = ev.target.files[0];
-  const csvStatus = document.getElementById('csvStatus');
-  if(!file) return;
-  csvStatus.textContent = 'Lese CSV …';
-  Papa.parse(file, {
-    header: true, skipEmptyLines: true, encoding: 'UTF-8',
-    complete: (res) => {
-      const fields = res.meta.fields || [];
-      const uriCol = findCol(fields, ['Track URI','Spotify URI','URI']);
-      const idCol = findCol(fields, ['Spotify ID','Track Id','Id']);
-      const nameCol = findCol(fields, ['Track Name','Name','Song','Title']);
-      const artistCol = findCol(fields, ['Artist Name(s)','Artist Name','Artist','Artists']);
-      const dateCol = findCol(fields, ['Release Date','Album Release Date','Date']);
-      if(!nameCol || (!uriCol && !idCol)){ csvStatus.textContent = 'Konnte die Spalten nicht erkennen.'; return; }
-      let added = 0;
-      res.data.forEach(row=>{
-        const link = linkFromRow(row, uriCol, idCol);
-        const title = nameCol ? (row[nameCol]||'').trim() : '';
-        if(!link || !title) return;
-        const artist = artistCol ? (row[artistCol]||'').replace(/;/g,' & ').trim() : '';
-        const year = dateCol ? (row[dateCol]||'').trim().slice(0,4) : '';
-        entries.push({year, artist, title, link}); added++;
-      });
-      render();
-      csvStatus.textContent = added > 0 ? `${added} Song(s) aus der CSV übernommen.` : 'Keine gültigen Zeilen gefunden.';
-      ev.target.value = '';
-    },
-    error: (err)=>{ csvStatus.textContent = 'Fehler beim Lesen der CSV: ' + err.message; }
+function wireCsvInput(){
+  const csvFile = document.getElementById('csvFile');
+  const csvChooseBtn = document.getElementById('csvChooseBtn');
+  const csvFileName = document.getElementById('csvFileName');
+  if(!csvFile) return;
+  if(csvChooseBtn) csvChooseBtn.addEventListener('click', ()=>csvFile.click());
+  csvFile.addEventListener('change', (ev)=>{
+    const file = ev.target.files[0];
+    const csvStatus = document.getElementById('csvStatus');
+    if(!file) return;
+    if(csvFileName) csvFileName.textContent = file.name;
+    csvStatus.textContent = t('readingCsv');
+    Papa.parse(file, {
+      header: true, skipEmptyLines: true, encoding: 'UTF-8',
+      complete: (res) => {
+        const fields = res.meta.fields || [];
+        const uriCol = findCol(fields, ['Track URI','Spotify URI','URI']);
+        const idCol = findCol(fields, ['Spotify ID','Track Id','Id']);
+        const nameCol = findCol(fields, ['Track Name','Name','Song','Title']);
+        const artistCol = findCol(fields, ['Artist Name(s)','Artist Name','Artist','Artists']);
+        const dateCol = findCol(fields, ['Release Date','Album Release Date','Date']);
+        if(!nameCol || (!uriCol && !idCol)){ csvStatus.textContent = t('csvColsUnclear'); return; }
+        let added = 0;
+        res.data.forEach(row=>{
+          const link = linkFromRow(row, uriCol, idCol);
+          const title = nameCol ? (row[nameCol]||'').trim() : '';
+          if(!link || !title) return;
+          const artist = artistCol ? (row[artistCol]||'').replace(/;/g,' & ').trim() : '';
+          const year = dateCol ? (row[dateCol]||'').trim().slice(0,4) : '';
+          entries.push({year, artist, title, link}); added++;
+        });
+        render();
+        csvStatus.textContent = added > 0 ? t('csvImported', added) : t('csvNoneFound');
+        ev.target.value = '';
+      },
+      error: (err)=>{ csvStatus.textContent = t('csvReadError', err.message); }
+    });
   });
-});
-
-// --- Gemeinsamer Playlist-Picker (aktuell ungenutzt, für zukünftige Erweiterungen) ---
-
+}
 // --- QR & PDF ---
 function makeQRDataURL(text){
   const host = document.getElementById('qrHost');
@@ -246,8 +440,8 @@ function makeQRDataURL(text){
 async function buildPdf(){
   const status = document.getElementById('status');
   const valid = entries.filter(e=>e.link && e.title);
-  if(valid.length===0){ status.textContent='Bitte mindestens einen Song mit Titel und Link eintragen.'; return; }
-  status.textContent = 'Erzeuge QR-Codes und PDF …';
+  if(valid.length===0){ status.textContent=t('needOneSong'); return; }
+  status.textContent = t('buildingPdf');
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({unit:'mm', format:'a4'});
@@ -308,14 +502,14 @@ async function buildPdf(){
   let downloads = null;
   try{ downloads = window.claude ? await window.claude.use('downloads') : null; }catch(e){ downloads = null; }
   if(downloads){
-    try{ await downloads.save({filename, data: blob}); status.textContent = 'PDF wurde zum Speichern angeboten.'; }
-    catch(err){ status.textContent = 'Speichern abgebrochen oder fehlgeschlagen.'; }
+    try{ await downloads.save({filename, data: blob}); status.textContent = t('pdfOfferedSave'); }
+    catch(err){ status.textContent = t('pdfSaveFailed'); }
   } else {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = filename; document.body.appendChild(a); a.click();
     a.remove(); URL.revokeObjectURL(url);
-    status.textContent = 'PDF-Download gestartet.';
+    status.textContent = t('pdfDownloadStarted');
   }
 }
 
